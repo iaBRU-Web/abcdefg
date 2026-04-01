@@ -3,109 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Terminal - Decoy Protocol</title>
+    <title>Secure Terminal - Guessing Exam</title>
     <style>
-        body { font-family: 'Courier New', monospace; background: #0a0a0a; color: #00ff41; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        .box { background: #141414; padding: 30px; border: 1px solid #00ff41; width: 400px; text-align: center; position: relative; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #00ff41; color: #00ff41; outline: none; box-sizing: border-box; }
-        .main-btn { width: 100%; padding: 12px; background: #00ff41; color: #000; border: none; font-weight: bold; cursor: pointer; }
+        body { font-family: 'Courier New', monospace; background: #050505; color: #00ff41; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; user-select: none; }
+        .box { background: #111; padding: 30px; border: 1px solid #00ff41; width: 420px; text-align: center; box-shadow: 0 0 20px rgba(0, 255, 41, 0.2); }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #00ff41; color: #00ff41; box-sizing: border-box; }
+        .login-btn { width: 100%; padding: 12px; background: #00ff41; color: #000; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        #secret-output { display: none; margin-top: 20px; padding: 15px; border-top: 1px dashed #00ff41; }
+        #gate-content { display: none; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; }
         
-        /* Prevent selection of the secret text */
-        #display-text { 
-            user-select: none; 
-            -webkit-user-select: none; 
-            filter: blur(4px); /* Adds extra "unreadable" effect until copied */
-            display: block;
-            margin-bottom: 15px;
-            font-size: 0.8em;
-            color: #444;
-        }
+        .copy-btn { padding: 15px 5px; border: none; cursor: pointer; font-weight: bold; font-size: 0.7rem; transition: 0.2s; color: white; }
+        .copy-btn:active { transform: scale(0.9); }
 
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-        .copy-btn { padding: 10px; border: none; cursor: pointer; font-weight: bold; font-size: 10px; color: white; transition: transform 0.2s; }
-        .copy-btn:hover { transform: scale(1.1); }
-        
-        /* Button Colors */
-        .blue { background: #0000ff; grid-column: span 2; } /* The Real One */
-        .red { background: #ff0000; }
-        .purple { background: #800080; }
-        .orange { background: #ffa500; }
-        .pink { background: #ffc0cb; color: #000; }
-        
-        .error { color: #ff0000; display: none; margin-bottom: 10px; font-size: 0.8em; }
-        #status { font-size: 0.7em; margin-top: 10px; color: #888; }
+        /* Colors */
+        .blue { background: #0044ff; grid-column: span 2; } /* THE ONLY REAL ONE */
+        .red { background: #aa0000; }
+        .purple { background: #660066; }
+        .orange { background: #cc6600; }
+        .pink { background: #cc0066; }
+        .grey { background: #333333; }
+        .cyan { background: #008888; }
+
+        .error { color: #ff0000; font-size: 0.8rem; margin-bottom: 10px; display: none; }
+        #strike-info { color: #888; font-size: 0.7rem; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div class="box" id="terminal">
-        <h2 id="title">TERMINAL AUTH</h2>
-        <div id="err" class="error">ACCESS DENIED</div>
-        
-        <div id="login-fields">
+        <h2 id="header">IDENTITY VERIFICATION</h2>
+        <div id="err" class="error">AUTH_FAILED: RE-ENTER CREDENTIALS</div>
+
+        <div id="auth-zone">
             <input type="password" id="pass" placeholder="PASSWORD">
             <input type="password" id="key" placeholder="KEYWORD">
-            <button class="main-btn" id="auth-btn">DECRYPT SYSTEM</button>
+            <button class="login-btn" id="login-trigger">INITIALIZE DECRYPTION</button>
         </div>
 
-        <div id="secret-output">
-            <span id="display-text">ENCRYPTED_STRING_LOCKED</span>
-            <div id="status">CLICK THE BLUE UNIT TO COPY. 2 ERRORS ALLOWED.</div>
+        <div id="gate-content">
+            <div style="font-size: 0.8rem; color: #00ff41; margin-bottom: 10px;">DECRYPTION SUCCESSFUL. SELECT THE DATA UNIT:</div>
             
             <div class="grid">
-                <button class="copy-btn red" onclick="wrong()">COPY</button>
-                <button class="copy-btn purple" onclick="wrong()">COPY</button>
-                <button class="copy-btn orange" onclick="wrong()">COPY</button>
-                <button class="copy-btn pink" onclick="wrong()">COPY</button>
+                <button class="copy-btn red" onclick="decoy('ERR_WRONG_PASS_01')">COPY</button>
+                <button class="copy-btn purple" onclick="decoy('X82-GTA-FAKE-LINK')">COPY</button>
+                <button class="copy-btn orange" onclick="decoy('RETRY_EXAM_BRU')">COPY</button>
+                <button class="copy-btn cyan" onclick="decoy('PN4RQFZ-EXPIRED')">COPY</button>
                 
-                <button class="copy-btn blue" id="real-copy-btn">COPY (REAL)</button>
+                <button class="copy-btn blue" id="real-unit">COPY (UNIT_0)</button>
                 
-                <button class="copy-btn red" onclick="wrong()">COPY</button>
-                <button class="copy-btn purple" onclick="wrong()">COPY</button>
-                <button class="copy-btn orange" onclick="wrong()">COPY</button>
-                <button class="copy-btn pink" onclick="wrong()">COPY</button>
+                <button class="copy-btn grey" onclick="decoy('DATA_CORRUPT_77')">COPY</button>
+                <button class="copy-btn pink" onclick="decoy('WRONG_PATH_404')">COPY</button>
+                <button class="copy-btn red" onclick="decoy('UNAUTHORIZED_ACCESS')">COPY</button>
+                <button class="copy-btn purple" onclick="decoy('SESSION_KILLED')">COPY</button>
             </div>
+            
+            <div id="strike-info">ATTEMPTS REMAINING: <span id="strikes">2</span></div>
         </div>
     </div>
 
     <script type="module">
-        const targetPass = import.meta.env.VITE_GATE_PASSWORD;
-        const targetKey = import.meta.env.VITE_GATE_KEYWORD;
-        const secretText = import.meta.env.VITE_SECRET_DATA;
+        const correctP = import.meta.env.VITE_GATE_PASSWORD;
+        const correctK = import.meta.env.VITE_GATE_KEYWORD;
+        const realData = import.meta.env.VITE_SECRET_DATA;
 
-        let failCount = 0;
+        let strikes = 2;
 
-        // Login Logic
-        document.getElementById('auth-btn').addEventListener('click', () => {
+        // Login Step
+        document.getElementById('login-trigger').addEventListener('click', () => {
             const p = document.getElementById('pass').value;
             const k = document.getElementById('key').value;
 
-            if (p === targetPass && k === targetKey) {
-                document.getElementById('login-fields').style.display = 'none';
-                document.getElementById('secret-output').style.display = 'block';
+            if (p === correctP && k === correctK) {
+                document.getElementById('auth-zone').style.display = 'none';
+                document.getElementById('gate-content').style.display = 'block';
                 document.getElementById('err').style.display = 'none';
+                document.getElementById('header').innerText = "DATA SELECTOR";
             } else {
                 document.getElementById('err').style.display = 'block';
+                document.getElementById('pass').value = '';
+                document.getElementById('key').value = '';
             }
         });
 
-        // Real Copy Logic
-        document.getElementById('real-copy-btn').addEventListener('click', () => {
-            navigator.clipboard.writeText(secretText).then(() => {
-                alert("DECRYPTED DATA COPIED TO CLIPBOARD");
+        // The Real Blue Button Logic
+        document.getElementById('real-unit').addEventListener('click', () => {
+            navigator.clipboard.writeText(realData).then(() => {
+                alert("SYSTEM: Correct Unit Selected. Real Link Copied.");
             });
         });
 
-        // Wrong Button Logic
-        window.wrong = function() {
-            failCount++;
-            if (failCount >= 2) {
-                document.getElementById('terminal').innerHTML = "<h1 style='color:red'>SYSTEM PURGED. REFRESH TO RETRY.</h1>";
+        // The Trap/Decoy Logic
+        window.decoy = function(fakeMsg) {
+            strikes--;
+            document.getElementById('strikes').innerText = strikes;
+            
+            // Copies the fake password/link assigned to that button
+            navigator.clipboard.writeText(fakeMsg);
+            
+            if (strikes <= 0) {
+                document.getElementById('terminal').innerHTML = "<h1 style='color:red'>EXAM FAILED.<br>SYSTEM TERMINATED.</h1>";
             } else {
-                alert("WARNING: INCORRECT UNIT. SYSTEM STABILITY AT 50%");
-                navigator.clipboard.writeText("WRONG_DATA_ERROR_0x99");
+                alert("WARNING: Decoy Selected. " + fakeMsg + " copied to clipboard.");
             }
         }
     </script>
