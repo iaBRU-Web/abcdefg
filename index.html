@@ -3,63 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Hashed Terminal</title>
+    <title>Secure Terminal Access</title>
     <style>
-        body { font-family: 'Courier New', monospace; background: #050505; color: #00ff41; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #111; padding: 30px; border: 1px solid #00ff41; width: 350px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #00ff41; color: #00ff41; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #00ff41; color: #000; border: none; cursor: pointer; font-weight: bold; }
-        #secret-output { display: none; margin-top: 20px; padding: 15px; border-top: 1px dashed #00ff41; word-break: break-all; }
-        .error { color: #ff3333; display: none; margin-bottom: 10px; }
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            background: #0a0a0a; 
+            color: #00ff41; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+        }
+        .box { 
+            background: #141414; 
+            padding: 30px; 
+            border: 1px solid #00ff41; 
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+            width: 350px;
+            text-align: center;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            background: #000; 
+            border: 1px solid #00ff41; 
+            color: #00ff41; 
+            outline: none;
+            box-sizing: border-box;
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: #00ff41; 
+            color: #000; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background: #008f11; color: #fff; }
+        #secret-output { 
+            display: none; 
+            margin-top: 20px; 
+            padding: 15px; 
+            border-top: 1px dashed #00ff41; 
+            word-break: break-all;
+            font-size: 0.9em;
+        }
+        .error { color: #ff0000; display: none; margin-bottom: 10px; font-size: 0.8em; }
     </style>
 </head>
 <body>
 
     <div class="box" id="login-form">
-        <h2>ENCRYPTED ACCESS</h2>
-        <div id="err" class="error">HASH MISMATCH - ACCESS DENIED</div>
+        <h2 style="margin-top:0">AUTH REQUIRED</h2>
+        <div id="err" class="error">INVALID CREDENTIALS</div>
         
         <input type="password" id="pass" placeholder="PASSWORD">
-        <input type="text" id="key" placeholder="KEYWORD">
+        <input type="password" id="key" placeholder="KEYWORD">
         
-        <button onclick="handleAuth()">VALIDATE HASH</button>
+        <button id="auth-btn">RUN DECRYPTION</button>
 
         <div id="secret-output">
-            <p style="color: #888; font-size: 0.8em;">SUCCESS: DATA DECRYPTED</p>
+            <p style="color: #aaa; font-size: 0.7em;">DECRYPTED DATA:</p>
             <span id="display-text"></span>
         </div>
     </div>
 
     <script type="module">
-        // These will be the LONG hash strings from Vercel
-        const hashedPass = import.meta.env.VITE_GATE_PASSWORD;
-        const hashedKey = import.meta.env.VITE_GATE_KEYWORD;
+        // Vite replaces these with Vercel Environment Variables
+        const targetPass = import.meta.env.VITE_GATE_PASSWORD;
+        const targetKey = import.meta.env.VITE_GATE_KEYWORD;
         const secretText = import.meta.env.VITE_SECRET_DATA;
 
-        // Function to turn plain text into a SHA-256 Hash
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
+        document.getElementById('auth-btn').addEventListener('click', () => {
+            const p = document.getElementById('pass').value;
+            const k = document.getElementById('key').value;
+            const err = document.getElementById('err');
+            const out = document.getElementById('secret-output');
+            const display = document.getElementById('display-text');
 
-        window.handleAuth = async function() {
-            const inputP = document.getElementById('pass').value;
-            const inputK = document.getElementById('key').value;
-            
-            // Hash the user's current input
-            const checkP = await sha256(inputP);
-            const checkK = await sha256(inputK);
-
-            if (checkP === hashedPass && checkK === hashedKey) {
-                document.getElementById('err').style.display = 'none';
-                document.getElementById('secret-output').style.display = 'block';
-                document.getElementById('display-text').textContent = secretText;
+            if (p === targetPass && k === targetKey) {
+                err.style.display = 'none';
+                out.style.display = 'block';
+                display.textContent = secretText;
+                
+                document.getElementById('pass').disabled = true;
+                document.getElementById('key').disabled = true;
             } else {
-                document.getElementById('err').style.display = 'block';
+                err.style.display = 'block';
+                // Clear inputs on failure for extra security
+                document.getElementById('pass').value = '';
+                document.getElementById('key').value = '';
             }
-        }
+        });
     </script>
 </body>
 </html>
