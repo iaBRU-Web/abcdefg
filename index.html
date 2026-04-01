@@ -17,7 +17,7 @@
         .copy-btn:active { transform: scale(0.9); }
 
 
-        .blue { background: #0044ff; grid-column: span 2; }
+        .blue { background: #0044ff; }
         .red { background: #aa0000; }
         .purple { background: #660066; }
         .orange { background: #cc6600; }
@@ -84,25 +84,25 @@
             }
         });
 
-        // The Real Blue Button Logic
+       
         document.getElementById('real-unit').addEventListener('click', () => {
             navigator.clipboard.writeText(realData).then(() => {
-                alert("SYSTEM: Correct Unit Selected. Real Link Copied.");
+                alert("SYSTEM: ITEM SELECTED");
             });
         });
 
-        // The Trap/Decoy Logic
+       
         window.decoy = function(fakeMsg) {
             strikes--;
             document.getElementById('strikes').innerText = strikes;
             
-            // Copies the fake password/link assigned to that button
+          
             navigator.clipboard.writeText(fakeMsg);
             
             if (strikes <= 0) {
                 document.getElementById('terminal').innerHTML = "<h1 style='color:red'>EXAM FAILED.<br>SYSTEM TERMINATED.</h1>";
             } else {
-                alert("WARNING: Decoy Selected. " + fakeMsg + " copied to clipboard.");
+                alert("SYSTEM: ITEM SELECTED");
             }
         }
     </script>
